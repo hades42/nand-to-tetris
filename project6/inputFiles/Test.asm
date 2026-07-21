@@ -2,3 +2,4 @@
 
 @3 // This is for testing
 D = M+ A
+(LOOP)

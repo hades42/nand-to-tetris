@@ -60,3 +60,134 @@ void parser_close(Parser *parser) {
         parser->file = NULL;
     }
 }
+
+instruction_type parser_instruction_type(Parser *parser) {
+    char *current_instr = parser -> current_instruction;
+    switch (current_instr[0]) {
+        case '@':
+            return A_INSTRUCTION;
+            break;
+        case '(':
+            return L_INSTRUCTION;
+            break;
+        default:
+            return C_INSTRUCTION;
+            break;
+    }
+}
+
+char *parser_symbol(Parser *parser, char *symbol, size_t symbol_size) {
+    char *current_instr = parser->current_instruction;
+    int read = 1;
+    size_t write = 0;
+    instruction_type type = parser_instruction_type(parser);
+
+    if (symbol_size == 0) {
+        return NULL;
+    }
+    // write + 1 < symbol_size is require to have space for '\0'
+    if (type == A_INSTRUCTION) {
+        while(current_instr[read] != '\0' && write + 1 < symbol_size) {
+            symbol[write] = current_instr[read];
+            read++;
+            write++;
+        }
+    } else if (type == L_INSTRUCTION) {
+        while (current_instr[read] != ')' && current_instr[read] != '\0' && write + 1 < symbol_size) {
+            symbol[write] = current_instr[read];
+            read++;
+            write++;
+        }
+    } else {
+        return NULL;
+    }
+
+    symbol[write] = '\0';
+    return symbol;
+}
+
+char *parser_dest(Parser *parser, char *dest, size_t dest_size) {
+    char *current_instr = parser->current_instruction;
+    instruction_type type = parser_instruction_type(parser);
+    int read = 0;
+    int write = 0;
+
+    if (dest_size == 0) {
+        return NULL;
+    }
+
+    if (type == C_INSTRUCTION) {
+        while (current_instr[read] != '=' && current_instr[read] != '\0' && write + 1 < dest_size) {
+            dest[write] = current_instr[read];
+            read++;
+            write++;
+        }
+    } else {
+        return NULL;
+    }
+
+    dest[write] = '\0';
+    return dest;
+}
+
+char *parser_comp(Parser *parser, char *comp, size_t comp_size) {
+    char *current_instr = parser->current_instruction;
+    instruction_type type = parser_instruction_type(parser);
+    int read = 0;
+    int write = 0;
+
+    if (comp_size == 0) {
+        return NULL;
+    }
+
+    if (type == C_INSTRUCTION) {
+        while (current_instr[read] != '=' && current_instr[read] != '\0') {
+            read++;
+        }
+
+        if (current_instr[read] == '\0') return NULL;
+        // move away from '='
+        read += 1;
+        while (current_instr[read] != ';' && current_instr[read] != '\0' && write + 1 < comp_size) {
+            comp[write] = current_instr[read];
+            read++;
+            write++;
+        }
+
+    } else {
+        return NULL;
+    }
+
+    comp[write] = '\0';
+    return comp;
+}
+
+char *parser_jump(Parser *parser, char *jump, size_t jump_size) {
+    char *current_instr = parser->current_instruction;
+    instruction_type type = parser_instruction_type(parser);
+    int read = 0;
+    int write = 0;
+
+    if (jump_size == 0) {
+        return NULL;
+    }
+
+    if (type == C_INSTRUCTION) {
+        while (current_instr[read] != ';' && current_instr[read] != '\0') {
+            read++;
+        }
+        if (current_instr[read] == '\0') return NULL;
+        // move away from ';'
+        read += 1;
+        while (current_instr[read] != '\0' && write + 1 < jump_size) {
+            jump[write] = current_instr[read];
+            write++;
+            read++;
+        }
+    } else {
+        return NULL;
+    }
+
+    jump[write] = '\0';
+    return jump;
+}
