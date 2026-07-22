@@ -99,7 +99,8 @@ char *parser_symbol(Parser *parser, char *symbol, size_t symbol_size) {
             write++;
         }
     } else {
-        return NULL;
+        symbol[0] = '\0';
+        return symbol;
     }
 
     symbol[write] = '\0';
@@ -110,20 +111,27 @@ char *parser_dest(Parser *parser, char *dest, size_t dest_size) {
     char *current_instr = parser->current_instruction;
     instruction_type type = parser_instruction_type(parser);
     int read = 0;
-    int write = 0;
+    size_t write = 0;
 
     if (dest_size == 0) {
         return NULL;
     }
 
     if (type == C_INSTRUCTION) {
-        while (current_instr[read] != '=' && current_instr[read] != '\0' && write + 1 < dest_size) {
-            dest[write] = current_instr[read];
-            read++;
-            write++;
+        const char *find_equal = strchr(current_instr, '=');
+        if (find_equal != NULL) {
+            while (current_instr[read] != '=' && current_instr[read] != '\0' && write + 1 < dest_size) {
+                dest[write] = current_instr[read];
+                read++;
+                write++;
+            }
+        } else {
+            dest[0] = '\0';
+            return dest;
         }
     } else {
-        return NULL;
+        dest[0] = '\0';
+        return dest;
     }
 
     dest[write] = '\0';
@@ -134,28 +142,25 @@ char *parser_comp(Parser *parser, char *comp, size_t comp_size) {
     char *current_instr = parser->current_instruction;
     instruction_type type = parser_instruction_type(parser);
     int read = 0;
-    int write = 0;
+    size_t write = 0;
 
     if (comp_size == 0) {
         return NULL;
     }
 
     if (type == C_INSTRUCTION) {
-        while (current_instr[read] != '=' && current_instr[read] != '\0') {
-            read++;
-        }
-
-        if (current_instr[read] == '\0') return NULL;
-        // move away from '='
-        read += 1;
-        while (current_instr[read] != ';' && current_instr[read] != '\0' && write + 1 < comp_size) {
-            comp[write] = current_instr[read];
-            read++;
+        char *find_equal = strchr(current_instr, '=');
+        // If there is an equal sign, the starting point should be after the "=", otherwise
+        // otherwise, it would be at the beginning
+        char *start = find_equal != NULL ? find_equal + 1 : current_instr;
+        while (start[read] != ';' && start[read] != '\0' && write + 1 < comp_size) {
+            comp[write] = start[read];
             write++;
+            read++;
         }
-
     } else {
-        return NULL;
+        comp[0] = '\0';
+        return comp;
     }
 
     comp[write] = '\0';
@@ -166,26 +171,28 @@ char *parser_jump(Parser *parser, char *jump, size_t jump_size) {
     char *current_instr = parser->current_instruction;
     instruction_type type = parser_instruction_type(parser);
     int read = 0;
-    int write = 0;
+    size_t write = 0;
 
     if (jump_size == 0) {
         return NULL;
     }
 
     if (type == C_INSTRUCTION) {
-        while (current_instr[read] != ';' && current_instr[read] != '\0') {
-            read++;
+        char *find_semicolon = strchr(current_instr, ';');
+        if (find_semicolon == NULL) {
+            jump[0] = '\0';
+            return jump;
         }
-        if (current_instr[read] == '\0') return NULL;
-        // move away from ';'
-        read += 1;
-        while (current_instr[read] != '\0' && write + 1 < jump_size) {
-            jump[write] = current_instr[read];
+
+        char *start = find_semicolon + 1;
+        while (start[read] != '\0' && write + 1 < jump_size) {
+            jump[write] = start[read];
             write++;
             read++;
         }
     } else {
-        return NULL;
+        jump[0] = '\0';
+        return jump;
     }
 
     jump[write] = '\0';
