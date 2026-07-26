@@ -3,16 +3,16 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/4/Fill.asm
 
-// Runs an infinite loop that listens to the keyboard input. 
+// Runs an infinite loop that listens to the keyboard input.
 // When a key is pressed (any key), the program blackens the screen,
-// i.e. writes "black" in every pixel. When no key is pressed, 
+// i.e. writes "black" in every pixel. When no key is pressed,
 // the screen should be cleared.
 
 // So we have like a main function to decide:
 // -> Which colour we are filling depend on the keystroke before we jump to a DRAW function
 
-// Inside DRAW function we define: 
-// -> a counter 
+// Inside DRAW function we define:
+// -> a counter
 // -> where to start @address
 
 // Go to a DRAWLOOP:
@@ -32,11 +32,15 @@
   @DRAW
   0;JMP
 (SET_BLACK)
-  @colour 
+  @colour
   M=-1
 
 (DRAW)
   // Set counter
+  // 512 pixels wide × 256 pixels high
+  // = 131072 pixels
+  // Each RAM word controls 16 pixels:
+  // 131072 / 16 = 8192 words
   @8192
   D=A
   @COUNTER
@@ -53,7 +57,7 @@
   @ADDRESS
   A=M
   M=D // set the colour
-  
+
   // Increase to the next screen section
   @ADDRESS
   M=M+1
@@ -66,4 +70,3 @@
 
   @MAIN
   0;JMP
-
