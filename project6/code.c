@@ -83,13 +83,21 @@ int code_a_instruction (char *symbol, char* code, size_t code_size) {
         return 0;
     }
 
-    if (*endptr != '\0' || value > 32767 || value < 0 || endptr == symbol) {
+    if (*endptr != '\0' || endptr == symbol) {
         return 0;
-    } else {
-        for (int bit = 15; bit >= 0; bit--) {
-            code[15 - bit] = ((value >> bit) & 1) ? '1' : '0';
-        }
-        code[16] = '\0';
-        return 1;
     }
+
+    return code_a_value((int) value, code, code_size);
+}
+
+int code_a_value (int value, char *code, size_t code_size) {
+    if (code_size < 17 || value < 0 || value > 32767) {
+        return 0;
+    }
+
+    for (int bit = 15; bit >= 0; bit--) {
+        code[15 - bit] = ((value >> bit) & 1) ? '1' : '0';
+    }
+    code[16] = '\0';
+    return 1;
 }
