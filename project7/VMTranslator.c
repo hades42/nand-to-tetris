@@ -8,6 +8,7 @@ int main(int argc, char *argv[])  {
     }
 
     while(parser_advance(&parser)) {
+        command_type command_type = parser_command_type(&parser);
     }
 
     parser_close(&parser);
