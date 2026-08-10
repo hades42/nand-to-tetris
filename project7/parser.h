@@ -26,7 +26,7 @@ int parser_open(Parser *parser, const char *filename);
 int parser_advance(Parser *parser);
 void parser_close(Parser *parser);
 command_type parser_command_type(Parser *parser);
-char *parser_arg1(Parser *parser);
-char *parser_arg2(Parser *parser);
+char *parser_arg1(char *current_command);
+char *parser_arg2(char *current_command);
 
 #endif

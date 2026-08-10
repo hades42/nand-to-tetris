@@ -70,7 +70,7 @@ command_type parser_command_type(Parser *parser) {
     char command[32];
     char *line = parser->current_instruction;
     int i;
-    for(i = 0; line[i] != ' '; i++) {
+    for(i = 0; line[i] != ' ' && line[i] != '\0' && i < sizeof(command) - 1; i++) {
         command[i] = line[i];
     }
 
@@ -83,7 +83,7 @@ command_type parser_command_type(Parser *parser) {
         strcmp(command, "add") == 0 || 
         strcmp(command, "sub") == 0 ||
         strcmp(command, "neg") == 0 ||
-        strcmp(command, "eg") == 0 ||
+        strcmp(command, "eq") == 0 ||
         strcmp(command, "gt") == 0 ||
         strcmp(command, "lt") == 0 ||
         strcmp(command, "and") == 0 ||
@@ -95,4 +95,11 @@ command_type parser_command_type(Parser *parser) {
     } else {
         return C_LABEL;
     }
+}
+
+char *parser_arg1(char *current_command) {
+}
+
+char *parser_arg2(char *current_command) {
+
 }
