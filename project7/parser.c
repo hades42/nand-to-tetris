@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 void remove_comment(char *line) {
     for (int i = 0; line[i] != '\0'; i++) {
@@ -69,7 +70,7 @@ void parser_close(Parser *parser) {
 command_type parser_command_type(char *line) {
     char command[32];
     int i;
-    for(i = 0; line[i] != ' ' && line[i] != '\0' && i < sizeof(command) - 1; i++) {
+    for(i = 0; !isspace(line[i]) && line[i] != '\0' && i < sizeof(command) - 1; i++) {
         command[i] = line[i];
     }
 
@@ -105,19 +106,23 @@ char *parser_arg1(Parser *parser, char *arg, size_t arg_size) {
 
     if (command_type == C_ARITHMETIC) {
         while (line[read] != '\0' && write + 1 < arg_size) {
-            arg[write] = line[read];
-            read++;
-            write++;
+            arg[write++] = line[read++];
         }
     } else if (command_type == C_PUSH || command_type == C_POP) {
-        while (!isspace(line[read])) {
+        // push constant 8
+        
+        // first token
+        while (!isspace(line[read]) && line[read] != '\0') {
             read++;
         }
 
-        while (!isspace(line[read]) && write + 1 < arg_size) {
-            arg[write] = line[read];
+        // first space 
+        while (line[read] != '\0' && isspace(line[read])) {
             read++;
-            write++;
+        }
+
+        while (!isspace(line[read]) && line[read] != '\0' && write + 1 < arg_size) {
+            arg[write++] = line[read++];
         }
     } else {
         arg[0] = '\0';
@@ -128,6 +133,51 @@ char *parser_arg1(Parser *parser, char *arg, size_t arg_size) {
     return arg;
 }
 
-int *parser_arg2(Parser *parser) {
 
+int parser_arg2(Parser *parser) {
+    char arg_2[MAX_LINE_LENGTH];
+    char *line = parser->current_instruction;
+    command_type command_type = parser_command_type(line); 
+    int read = 0;
+    int write = 0;
+
+    if (command_type == C_PUSH || command_type == C_POP || command_type == C_FUNCTION || command_type == C_CALL) {
+        // first token
+        while (line[read] != '\0' && !isspace(line[read])) {
+            read++;
+        }
+
+        // first space
+        while (line[read] != '\0' && isspace(line[read])) {
+            read++;
+        }
+
+        // second token
+        while (line[read] != '\0' && !isspace(line[read])) {
+            read++;
+        }
+
+        // second space
+        while (line[read] != '\0' && isspace(line[read])) {
+            read++;
+        }
+
+        // third token
+        while(line[read] != '\0' && !isspace(line[read]) && write + 1 < MAX_LINE_LENGTH) {
+            arg_2[write++] = line[read++];
+        }
+
+        arg_2[write] = '\0';
+        
+        char *end;
+        long value = strtol(arg_2, &end, 10);
+        
+        if (end == arg_2 ||*end != '\0' || value < 0) {
+            return -1;
+        } else {
+            return value;
+        }
+    } else {
+        return -1;
+    }
 }

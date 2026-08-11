@@ -27,6 +27,6 @@ int parser_advance(Parser *parser);
 void parser_close(Parser *parser);
 command_type parser_command_type(char *line);
 char *parser_arg1(Parser *parser, char *arg, size_t arg_size);
-char *parser_arg2(char *current_command);
+int parser_arg2(Parser *parser);
 
 #endif
