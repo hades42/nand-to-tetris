@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #define MAX_LINE_LENGTH 256
+#define MAX_FILE_LENGTH 1024
 
 typedef struct {
     FILE *file;
