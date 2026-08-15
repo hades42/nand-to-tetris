@@ -17,4 +17,9 @@ void code_writer_push_pop(
     int index
 );
 
+void code_writer_arithmetic(
+    CodeWriter *code_writer,
+    const char *command
+)
+
 #endif
