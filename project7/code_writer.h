@@ -6,6 +6,7 @@
 
 typedef struct {
     FILE *file;
+    int comparison_id;
 } CodeWriter;
 
 int code_writer_open(CodeWriter *code_writer, const char *filename);
@@ -20,6 +21,6 @@ void code_writer_push_pop(
 void code_writer_arithmetic(
     CodeWriter *code_writer,
     const char *command
-)
+);
 
 #endif

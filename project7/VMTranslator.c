@@ -2,7 +2,7 @@
 #include "code_writer.h"
 
 // TODO (vannguyen): Need to put some gaurd against file extension and filename
-void *output_file(const char *file_name, char *output_file, size_t output_file_size) {
+void output_file(const char *file_name, char *output_file, size_t output_file_size) {
     int read = 0;
     size_t write = 0;
 
@@ -42,7 +42,11 @@ int main(int argc, char *argv[])  {
         char *arg1 = parser_arg1(&parser, arg_1, sizeof(arg_1));
         int arg2 = parser_arg2(&parser); 
         command_type type = parser_command_type(parser.current_instruction);
-        code_writer_push_pop(&code_writer, type, arg1, arg2);
+        if (type == C_PUSH || type == C_POP) {
+            code_writer_push_pop(&code_writer, type, arg1, arg2);
+        } else if (type == C_ARITHMETIC) {
+            code_writer_arithmetic(&code_writer, arg1);
+        }
     }
 
     parser_close(&parser);
