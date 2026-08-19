@@ -19,6 +19,38 @@ void code_writer_close(CodeWriter *code_writer) {
     }
 }
 
+void code_writer_file_name (
+    CodeWriter *code_writer,
+    const char *input_path 
+) {
+    int read = 0;
+    int count_slash = 0;
+    while (input_path[read] != '\0') {
+        if (input_path[read] ==  '/') {
+            count_slash++;
+        }
+        read++;
+    }
+
+    int temp = 0;
+    read = 0;
+    while (input_path[read] != '\0' && temp != count_slash) {
+        if (input_path[read] == '/') {
+            temp++;
+        }
+        read++;
+    }
+
+    size_t write = 0;
+    while(
+        input_path[read] != '.' && 
+        write + 1 < sizeof(code_writer->file_name)
+    ) {
+        code_writer->file_name[write++] = input_path[read++];
+    }
+    code_writer->file_name[write] = '\0';
+}
+
 void code_writer_push_pop(
     CodeWriter *code_writer, 
     command_type type,
@@ -70,7 +102,12 @@ void code_writer_push_pop(
                 fprintf(stderr, "Error: pointer index can only be 0 or 1");
                 return;
             }
-        } else {
+        } else if (strcmp(segment, "static") == 0) {
+            char *file_name = code_writer->file_name;
+            fprintf(output_file, "@%s.%d\n", file_name, index);
+            fprintf(output_file, "D=M\n");
+        }
+        else {
             fprintf(stderr, "Error: Unknown segment in push");
             return;
         }
@@ -112,6 +149,12 @@ void code_writer_push_pop(
                 fprintf(stderr, "Error: pointer index can only be 0 or 1");
                 return;
             }
+        } else if (strcmp(segment, "static") == 0) {
+            char *file_name = code_writer->file_name;
+            fprintf(output_file, "@%s.%d\n", file_name, index);
+            fprintf(output_file, "D=A\n");
+            fprintf(output_file, "@R13\n");
+            fprintf(output_file, "M=D\n");
         } else if (base != NULL) {
             fprintf(output_file, "@%d\n", index);
             fprintf(output_file, "D=A\n");

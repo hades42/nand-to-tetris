@@ -7,6 +7,7 @@
 typedef struct {
     FILE *file;
     int comparison_id;
+    char file_name[MAX_FILE_LENGTH];
 } CodeWriter;
 
 int code_writer_open(CodeWriter *code_writer, const char *filename);
@@ -16,6 +17,10 @@ void code_writer_push_pop(
     command_type type,
     const char *segment,
     int index
+);
+void code_writer_file_name (
+    CodeWriter *code_writer,
+    const char *intput_path
 );
 
 void code_writer_arithmetic(

@@ -34,15 +34,16 @@ int main(int argc, char *argv[])  {
     }
 
     output_file(argv[1], output_file_name, sizeof(output_file_name));
+    code_writer_file_name(&code_writer, argv[1]);
     if (!code_writer_open(&code_writer, output_file_name)) {
         return 1;
     }
 
     while(parser_advance(&parser)) {
         char *arg1 = parser_arg1(&parser, arg_1, sizeof(arg_1));
-        int arg2 = parser_arg2(&parser); 
         command_type type = parser_command_type(parser.current_instruction);
         if (type == C_PUSH || type == C_POP) {
+            int arg2 = parser_arg2(&parser); 
             code_writer_push_pop(&code_writer, type, arg1, arg2);
         } else if (type == C_ARITHMETIC) {
             code_writer_arithmetic(&code_writer, arg1);
