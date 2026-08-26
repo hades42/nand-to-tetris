@@ -1,8 +1,16 @@
 #include "parser.h"
 #include "code_writer.h"
+#include "string.h"
 
-// TODO (vannguyen): Need to put some gaurd against file extension and filename
-void output_file(const char *file_name, char *output_file, size_t output_file_size) {
+int output_file(char *file_name, char *output_file, size_t output_file_size) {
+    size_t file_name_length = strlen(file_name); 
+    char *extension_p = file_name + file_name_length - 3; 
+
+    if (strcmp(extension_p, ".vm") != 0 || strlen(extension_p) != 3) {
+        fprintf(stderr, "Error: File extension need to be .vm\n");
+        return 0;
+    }
+
     int read = 0;
     size_t write = 0;
 
@@ -16,6 +24,7 @@ void output_file(const char *file_name, char *output_file, size_t output_file_si
     }
 
     output_file[write] = '\0';
+    return 1;
 }
 
 int main(int argc, char *argv[])  {
@@ -33,7 +42,10 @@ int main(int argc, char *argv[])  {
         return 1;
     }
 
-    output_file(argv[1], output_file_name, sizeof(output_file_name));
+    if (!output_file(argv[1], output_file_name, sizeof(output_file_name))) {
+        return 1;
+    }
+
     code_writer_file_name(&code_writer, argv[1]);
     if (!code_writer_open(&code_writer, output_file_name)) {
         return 1;

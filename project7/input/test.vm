@@ -1,2 +1,4 @@
 push this 3
-push local 4
+push static 4
+push that 5
+push static 6
