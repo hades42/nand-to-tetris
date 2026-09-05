@@ -28,4 +28,19 @@ void code_writer_arithmetic(
     const char *command
 );
 
+void code_writer_label(
+    CodeWriter *code_writer,
+    const char *label
+);
+
+void code_writer_goto(
+    CodeWriter *code_writer,
+    const char *label
+);
+
+void code_writer_if(
+    CodeWriter *code_writer,
+    const char *label
+);
+
 #endif

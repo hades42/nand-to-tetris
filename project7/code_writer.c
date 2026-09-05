@@ -262,3 +262,33 @@ void code_writer_arithmetic (
         code_writer->comparison_id++;
     }
 }
+
+void code_writer_label (
+    CodeWriter *code_writer,
+    const char *label
+) {
+    FILE *output_file = code_writer->file;
+    fprintf(output_file, "(%s)\n", label);
+}
+
+void code_writer_goto (
+    CodeWriter *code_writer,
+    const char *label
+) {
+    FILE *output_file = code_writer->file;
+    fprintf(output_file, "@%s\n", label);
+    fprintf(output_file, "0;JMP\n");
+}
+
+void code_writer_if (
+    CodeWriter *code_writer,
+    const char *label
+) {
+    FILE *output_file = code_writer->file;
+    fprintf(output_file, "@SP\n");
+    fprintf(output_file, "M=M-1\n");
+    fprintf(output_file, "A=M\n");
+    fprintf(output_file, "D=M\n");
+    fprintf(output_file, "@%s\n", label);
+    fprintf(output_file, "D;JNE\n");
+}

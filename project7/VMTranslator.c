@@ -59,6 +59,12 @@ int main(int argc, char *argv[])  {
             code_writer_push_pop(&code_writer, type, arg1, arg2);
         } else if (type == C_ARITHMETIC) {
             code_writer_arithmetic(&code_writer, arg1);
+        } else if (type == C_LABEL) {
+            code_writer_label(&code_writer, arg1); 
+        } else if (type == C_GOTO) {
+            code_writer_goto(&code_writer, arg1);
+        } else if (type == C_IF) {
+            code_writer_if(&code_writer, arg1);
         }
     }
 

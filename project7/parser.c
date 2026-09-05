@@ -92,8 +92,15 @@ command_type parser_command_type(char *line) {
         )
     {
         return C_ARITHMETIC;
-    } else {
+    } else if (strcmp(command, "label")) {
         return C_LABEL;
+    } else if (strcmp(command, "goto")) {
+        return C_GOTO;
+    } else if (strcmp(command, "if-goto")) {
+        return C_IF;
+    } else {
+        // hades42: Return C_FUNCTION for now
+        return C_FUNCTION;
     }
 }
 
@@ -109,8 +116,9 @@ char *parser_arg1(Parser *parser, char *arg, size_t arg_size) {
             arg[write++] = line[read++];
         }
     } else if (command_type == C_PUSH || command_type == C_POP) {
-        // push constant 8
-        
+        // push | spaces | constant | spaces | 8
+        // 1                 2                 3
+
         // first token
         while (!isspace(line[read]) && line[read] != '\0') {
             read++;
@@ -142,6 +150,9 @@ int parser_arg2(Parser *parser) {
     int write = 0;
 
     if (command_type == C_PUSH || command_type == C_POP || command_type == C_FUNCTION || command_type == C_CALL) {
+        // push | spaces | constant | spaces | 8
+        // 1                 2                 3
+
         // first token
         while (line[read] != '\0' && !isspace(line[read])) {
             read++;
